@@ -4,6 +4,8 @@ from scipy.io import wavfile
 import os
 
 # run: python src/proyecto_pds.py
+# source venv/Scripts/activate
+# python -m pip install numpy scipy matplotlib
 
 # Crear carpetas si no existen
 os.makedirs("graficas", exist_ok=True)
