@@ -157,3 +157,68 @@ plt.grid(True)
 plt.tight_layout()
 plt.savefig("graficas/voz_ruidosa_B_zoom.png", dpi=300)
 plt.show()
+
+# ==============================
+# Parte 3: Análisis espectral con FFT
+# ==============================
+
+def graficar_espectro(senal, fs, titulo, nombre_archivo):
+    """
+    Calcula y grafica el espectro de magnitud de una señal usando FFT.
+    Se usa escala en decibeles para observar mejor las diferencias.
+    """
+    N = len(senal)
+
+    # Calcular FFT
+    X = np.fft.fft(senal)
+
+    # Frecuencias
+    frecuencias = np.fft.fftfreq(N, d=1/fs)
+
+    # Nos quedamos con la mitad positiva
+    mitad = N // 2
+    frecuencias_positivas = frecuencias[:mitad]
+
+    # Magnitud
+    magnitud = np.abs(X[:mitad])
+
+    # Convertir a decibeles
+    magnitud_db = 20 * np.log10(magnitud + 1e-12)
+
+    # Graficar
+    plt.figure(figsize=(10, 4))
+    plt.plot(frecuencias_positivas, magnitud_db)
+    plt.xlabel("Frecuencia [Hz]")
+    plt.ylabel("Magnitud [dB]")
+    plt.title(titulo)
+    plt.grid(True)
+    plt.xlim(0, 8000)
+    plt.tight_layout()
+    plt.savefig(nombre_archivo, dpi=300)
+    plt.show()
+
+# Espectro de la señal original
+graficar_espectro(
+    x,
+    fs,
+    "Espectro en dB de la señal de voz original",
+    "graficas/espectro_db_voz_original.png"
+)
+
+# Espectro de la señal con ruido moderado
+graficar_espectro(
+    x_ruidosa_A,
+    fs,
+    "Espectro en dB de la señal de voz con ruido moderado",
+    "graficas/espectro_db_voz_ruidosa_A.png"
+)
+
+# Espectro de la señal con ruido fuerte
+graficar_espectro(
+    x_ruidosa_B,
+    fs,
+    "Espectro en dB de la señal de voz con ruido fuerte",
+    "graficas/espectro_db_voz_ruidosa_B.png"
+)
+
+print("Análisis espectral realizado correctamente.")
