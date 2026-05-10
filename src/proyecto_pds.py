@@ -201,33 +201,11 @@ def graficar_espectro(senal, fs, titulo, nombre_archivo):
 graficar_espectro(
     x,
     fs,
-    "Espectro de magnitud de la señal de voz original",
-    "graficas/espectro_voz_original.png"
-)
-
-# Espectro de la señal con ruido moderado
-graficar_espectro(
-    x_ruidosa_A,
-    fs,
-    "Espectro de magnitud de la señal de voz con ruido moderado",
-    "graficas/espectro_voz_ruidosa_A.png"
-)
-
-# Espectro de la señal con ruido fuerte
-graficar_espectro(
-    x_ruidosa_B,
-    fs,
-    "Espectro de magnitud de la señal de voz con ruido fuerte",
-    "graficas/espectro_voz_ruidosa_B.png"
-)
-
-graficar_espectro(
-    x,
-    fs,
     "Espectro en dB de la señal de voz original",
     "graficas/espectro_db_voz_original.png"
 )
 
+# Espectro de la señal con ruido moderado
 graficar_espectro(
     x_ruidosa_A,
     fs,
@@ -235,6 +213,7 @@ graficar_espectro(
     "graficas/espectro_db_voz_ruidosa_A.png"
 )
 
+# Espectro de la señal con ruido fuerte
 graficar_espectro(
     x_ruidosa_B,
     fs,
