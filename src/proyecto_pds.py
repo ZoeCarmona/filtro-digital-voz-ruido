@@ -327,3 +327,73 @@ graficar_espectro(
     "Espectro en dB de la señal de voz filtrada",
     "graficas/espectro_db_voz_filtrada.png"
 )
+
+# ==============================
+# Parte 5: Evaluación del desempeño y métricas de error
+# ==============================
+
+def calcular_ecm(senal_original, senal_comparada):
+    """
+    Calcula el Error Cuadrático Medio entre dos señales.
+    """
+    return np.mean((senal_original - senal_comparada) ** 2)
+
+
+def calcular_snr(senal_original, senal_comparada):
+    """
+    Calcula la Relación Señal-Ruido en dB.
+    """
+    ruido_error = senal_original - senal_comparada
+    potencia_senal = np.mean(senal_original ** 2)
+    potencia_ruido = np.mean(ruido_error ** 2)
+
+    return 10 * np.log10(potencia_senal / potencia_ruido)
+
+
+# Como el filtro FIR introduce un pequeño retardo, se compensa para comparar mejor
+retardo = (orden_filtro - 1) // 2
+
+x_comp = x[:-retardo]
+x_ruidosa_B_comp = x_ruidosa_B[:-retardo]
+y_filtrada_comp = y_filtrada[retardo:]
+
+# Calcular ECM
+ecm_ruidosa = calcular_ecm(x_comp, x_ruidosa_B_comp)
+ecm_filtrada = calcular_ecm(x_comp, y_filtrada_comp)
+
+# Calcular SNR
+snr_antes = calcular_snr(x_comp, x_ruidosa_B_comp)
+snr_despues = calcular_snr(x_comp, y_filtrada_comp)
+
+print("\nMétricas de desempeño")
+print("----------------------")
+print("ECM señal ruidosa B vs original:", ecm_ruidosa)
+print("ECM señal filtrada vs original:", ecm_filtrada)
+print("SNR antes del filtrado:", snr_antes, "dB")
+print("SNR después del filtrado:", snr_despues, "dB")
+
+# ==============================
+# Gráfica comparativa de métricas ECM
+# ==============================
+
+plt.figure(figsize=(8, 4))
+plt.bar(["Ruidosa B", "Filtrada"], [ecm_ruidosa, ecm_filtrada])
+plt.ylabel("ECM")
+plt.title("Comparación del Error Cuadrático Medio")
+plt.grid(axis="y")
+plt.tight_layout()
+plt.savefig("graficas/comparacion_ecm.png", dpi=300)
+plt.show()
+
+# ==============================
+# Gráfica comparativa de SNR
+# ==============================
+
+plt.figure(figsize=(8, 4))
+plt.bar(["Antes del filtrado", "Después del filtrado"], [snr_antes, snr_despues])
+plt.ylabel("SNR [dB]")
+plt.title("Comparación de SNR antes y después del filtrado")
+plt.grid(axis="y")
+plt.tight_layout()
+plt.savefig("graficas/comparacion_snr.png", dpi=300)
+plt.show()
