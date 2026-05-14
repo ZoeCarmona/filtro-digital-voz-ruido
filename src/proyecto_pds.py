@@ -222,3 +222,108 @@ graficar_espectro(
 )
 
 print("Análisis espectral realizado correctamente.")
+
+# ==============================
+# Parte 4: Diseño y aplicación del filtro digital
+# ==============================
+
+from scipy.signal import firwin, lfilter, freqz
+
+# Parámetros del filtro
+frecuencia_corte = 3500  # Hz
+orden_filtro = 101       # número de coeficientes del filtro FIR
+
+# Diseñar filtro FIR pasa-bajas con ventana Hamming
+coeficientes_filtro = firwin(
+    numtaps=orden_filtro,
+    cutoff=frecuencia_corte,
+    fs=fs,
+    window="hamming",
+    pass_zero="lowpass"
+)
+
+# Aplicar filtro a la señal con ruido fuerte
+y_filtrada = lfilter(coeficientes_filtro, 1.0, x_ruidosa_B)
+
+# Normalizar señal filtrada
+y_filtrada = y_filtrada / np.max(np.abs(y_filtrada))
+
+# Guardar audio filtrado
+write("audios_generados/voz_filtrada.wav", fs, (y_filtrada * 32767).astype(np.int16))
+
+print("Filtro digital aplicado correctamente.")
+print("Tipo de filtro: FIR pasa-bajas")
+print("Frecuencia de corte:", frecuencia_corte, "Hz")
+print("Orden del filtro:", orden_filtro)
+
+# ==============================
+# Respuesta en frecuencia del filtro
+# ==============================
+
+w, h = freqz(coeficientes_filtro, worN=8000, fs=fs)
+
+plt.figure(figsize=(10, 4))
+plt.plot(w, 20 * np.log10(np.abs(h) + 1e-12))
+plt.xlabel("Frecuencia [Hz]")
+plt.ylabel("Magnitud [dB]")
+plt.title("Respuesta en frecuencia del filtro FIR pasa-bajas")
+plt.grid(True)
+plt.xlim(0, 8000)
+plt.tight_layout()
+plt.savefig("graficas/respuesta_filtro_pasabajas.png", dpi=300)
+plt.show()
+
+# ==============================
+# Señal filtrada completa
+# ==============================
+
+plt.figure(figsize=(10, 4))
+plt.plot(t, y_filtrada)
+plt.xlabel("Tiempo [s]")
+plt.ylabel("Amplitud normalizada")
+plt.title("Señal de voz filtrada en el dominio del tiempo")
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("graficas/voz_filtrada_completa.png", dpi=300)
+plt.show()
+
+# ==============================
+# Zoom de la señal filtrada
+# ==============================
+
+plt.figure(figsize=(10, 4))
+plt.plot(t[idx_inicio:idx_fin], y_filtrada[idx_inicio:idx_fin])
+plt.xlabel("Tiempo [s]")
+plt.ylabel("Amplitud normalizada")
+plt.title("Zoom de la señal de voz filtrada: 50 a 100 ms")
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("graficas/voz_filtrada_zoom.png", dpi=300)
+plt.show()
+
+# ==============================
+# Comparación entre señal ruidosa B y filtrada
+# ==============================
+
+plt.figure(figsize=(10, 4))
+plt.plot(t, x_ruidosa_B, label="Señal con ruido fuerte", alpha=0.7)
+plt.plot(t, y_filtrada, label="Señal filtrada", alpha=0.7)
+plt.xlabel("Tiempo [s]")
+plt.ylabel("Amplitud normalizada")
+plt.title("Comparación entre señal ruidosa y señal filtrada")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("graficas/comparacion_ruidosa_filtrada.png", dpi=300)
+plt.show()
+
+# ==============================
+# Espectro de la señal filtrada
+# ==============================
+
+graficar_espectro(
+    y_filtrada,
+    fs,
+    "Espectro en dB de la señal de voz filtrada",
+    "graficas/espectro_db_voz_filtrada.png"
+)
